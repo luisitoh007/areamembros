@@ -10,54 +10,32 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
 <body>
+  <!-- Navbar -->
   <nav class="nav-bar">
     <div class="logo">BlackMind Academy</div>
     <button onclick="logout()" class="btn-logout">Sair</button>
   </nav>
+
+  <!-- Conteúdo principal -->
   <main class="modules-container">
     <h1>Seus Módulos</h1>
-    <div class="cards">
-      <!-- Gerar 10 módulos -->
-      <script>
-        const modules = [];
-        for (let i = 1; i <= 10; i++) {
-          modules.push({
-            id: i,
-            title: `Módulo ${i}`,
-            thumb: `https://via.placeholder.com/300x200?text=Módulo+${i}`,
-            lessons: [
-              `Aula 1 do Módulo ${i}`,
-              `Aula 2 do Módulo ${i}`,
-              `Aula 3 do Módulo ${i}`
-            ]
-          });
-        }
-        modules.forEach(mod => {
-          document.write(`
-            <div class="card" onclick="openModule(${mod.id})">
-              <img src="${mod.thumb}" alt="Thumb Módulo ${mod.id}" />
-              <div class="card-info">
-                <span class="module-label">Módulo ${mod.id}</span>
-                <h2>${mod.title}</h2>
-              </div>
-            </div>
-          `);
-        });
-      </script>
+    <div class="cards" id="cards-container">
+      <!-- Cards serão gerados via JavaScript -->
     </div>
-    <!-- Detalhes do módulo -->
-    <section id="module-detail" class="module-detail hidden">
-      <button class="back-btn" onclick="closeModule()">← Voltar</button>
-      <h2 id="detail-title"></h2>
-      <div class="progress-bar">
-        <div id="progress-fill" class="progress-fill"></div>
-      </div>
-      <ul id="lesson-list"></ul>
-    </section>
   </main>
 
+  <!-- Detalhe de Módulo -->
+  <div id="module-detail" class="module-detail hidden">
+    <button class="back-btn" onclick="closeModule()">← Voltar</button>
+    <h2 id="detail-title"></h2>
+    <div class="progress-bar">
+      <div id="progress-fill" class="progress-fill"></div>
+    </div>
+    <ul id="lesson-list" class="lesson-list"></ul>
+  </div>
+
   <script>
-    // Firebase config
+    // Configuração Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
       authDomain: "black-mind-d6547.firebaseapp.com",
@@ -66,33 +44,64 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Auth guard
+    // Verifica autenticação
     auth.onAuthStateChanged(user => {
       if (!user) window.location.href = 'index.html';
     });
 
+    // Função de logout
     function logout() {
       auth.signOut().then(() => window.location.href = 'index.html');
     }
 
-    // Módulos
-    const modulesData = modules;
+    // Dados dos módulos
+    const modulesData = Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      title: `Módulo ${i + 1}`,
+      thumb: `https://via.placeholder.com/300x200?text=Módulo+${i + 1}`,
+      lessons: Array.from({ length: 5 }, (_, j) => `Aula ${j + 1} do Módulo ${i + 1}`)
+    }));
+
+    // Gera os cards após carregar DOM
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('cards-container');
+      modulesData.forEach(mod => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${mod.thumb}" alt="Thumb Módulo ${mod.id}" />
+          <div class="card-info">
+            <span class="module-label">Módulo ${mod.id}</span>
+            <h2>${mod.title}</h2>
+          </div>
+        `;
+        card.addEventListener('click', () => openModule(mod.id));
+        container.appendChild(card);
+      });
+    });
+
+    // Abre a seção de detalhes do módulo
     function openModule(id) {
       const mod = modulesData.find(m => m.id === id);
       document.getElementById('detail-title').innerText = mod.title;
       const listEl = document.getElementById('lesson-list');
       listEl.innerHTML = '';
-      mod.lessons.forEach(lesson => {
+      mod.lessons.forEach((lesson, index) => {
         const li = document.createElement('li');
         li.innerText = lesson;
+        // Exemplo: marcar metade das aulas como concluídas
+        if (index < Math.floor(mod.lessons.length / 2)) li.classList.add('completed');
         listEl.appendChild(li);
       });
-      // Exemplo: progresso fixo de 0%
-      document.getElementById('progress-fill').style.width = '0%';
-      document.querySelector('.module-detail').classList.remove('hidden');
+      // Exemplo: progresso aleatório
+      const percent = Math.floor((mod.lessons.filter((_,i) => i < Math.floor(mod.lessons.length / 2)).length / mod.lessons.length) * 100);
+      document.getElementById('progress-fill').style.width = percent + '%';
+      document.getElementById('module-detail').classList.remove('hidden');
     }
+
+    // Fecha a seção de detalhes
     function closeModule() {
-      document.querySelector('.module-detail').classList.add('hidden');
+      document.getElementById('module-detail').classList.add('hidden');
     }
   </script>
 </body>
