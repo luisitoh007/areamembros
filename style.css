@@ -1,120 +1,263 @@
-/* style.css - Estilo ajustado para carrossel horizontal e módulos */
+/* style.css - Estilo padrão e aprimorado BlackMind Academy */
 
-/* ... (mantenha tudo acima do CARROSSEL DE MÓDULOS intacto) ... */
-
-/* CARROSSEL DE MÓDULOS - AJUSTES */
-.carousel-container {
-  position: relative;
-  padding: 0 40px;
-  margin: 20px 0;
+/* RESET E BASE */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #0a1935, #1c1c1c);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* LOGIN / REGISTER */
+.login-container {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  max-width: 400px;
+  margin: auto;
+}
+.login-container h1 {
+  color: #00bfff;
+  margin-bottom: 10px;
+}
+.login-container h2 {
+  margin-bottom: 20px;
+  color: #ccc;
+}
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+}
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  background: #00bfff;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.login-container button:hover {
+  background: #009acd;
+}
+.login-container p {
+  margin-top: 15px;
+  font-size: 14px;
+}
+.login-container a {
+  color: #00bfff;
+  text-decoration: none;
+}
+.login-container a:hover {
+  text-decoration: underline;
+}
+
+/* NAVBAR */
+.nav-bar {
+  width: 100%;
+  background-color: #0a1935;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+.nav-bar .logo {
+  font-size: 1.5rem;
+  color: #00bfff;
+  font-weight: bold;
+}
+.nav-bar .btn-logout {
+  background: transparent;
+  border: 2px solid #00bfff;
+  color: #00bfff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+.nav-bar .btn-logout:hover {
+  background: #00bfff;
+  color: #0a1935;
+}
+
+/* CONTAINER PRINCIPAL */
+.modules-container {
+  flex: 1;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+}
+.modules-container h1 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #00bfff;
+  text-align: center;
+}
+
+/* CARROSSEL DE MÓDULOS - 2 LINHAS */
+.carousel-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 10px 0;
+}
+.carousel-container .carousel-btn {
+  background: rgba(10, 25, 53, 0.8);
+  border: none;
+  color: #00bfff;
+  font-size: 2rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+.carousel-container .prev {
+  left: 10px;
+}
+.carousel-container .next {
+  right: 10px;
+}
 .carousel-container .cards {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding: 20px 0;
   scroll-behavior: smooth;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  padding: 0 60px;
+  max-height: calc(2 * 300px + 20px); /* altura para 2 linhas de cards */
+}
+.carousel-container .cards::-webkit-scrollbar {
+  display: none;
 }
 
-/* Cards maiores para melhor visualização */
+/* CARDS DE MÓDULOS (MAIORES) */
 .card {
-  scroll-snap-align: start;
-  min-width: 300px; /* Aumentado de 240px */
   background: #121212;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+  flex: 0 0 auto;
+  cursor: pointer;
   transition: transform 0.2s;
-  flex-shrink: 0; /* Impede redução de tamanho */
+  min-height: 260px;
 }
-
-/* Imagens mais destacadas */
+.card:hover {
+  transform: translateY(-5px);
+}
 .card img {
   width: 100%;
-  height: 180px; /* Aumentado de 140px */
+  height: 160px;
   object-fit: cover;
-  border-bottom: 2px solid #00bfff;
+}
+.card-info {
+  padding: 12px;
+}
+.module-label {
+  display: inline-block;
+  background: #00bfff;
+  color: #0a1935;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.card-info h2 {
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin-top: 4px;
 }
 
-/* Botões de navegação mais destacados */
-.carousel-container .carousel-btn {
-  background: rgba(10, 25, 53, 0.9);
-  width: 50px;
-  height: 50px;
-  font-size: 2.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-
-/* DETALHE DE MÓDULO - AJUSTES */
+/* DETALHE DE MÓDULO - SEM PROGRESSO (SEM COMPLETION DEFAULT) */
 .module-detail {
-  padding: 40px 20px;
-  align-items: flex-start;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  overflow-y: auto;
+  z-index: 100;
 }
-
+.module-detail.hidden {
+  display: none;
+}
+.module-detail .back-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: none;
+  color: #00bfff;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
 .module-detail h2 {
-  width: 80%;
-  margin: 0 auto 20px;
+  color: #00bfff;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
   text-align: center;
+  width: 80%;
 }
 
-/* Barra de progresso centralizada */
+/* BARRA DE PROGRESSO - INICIAL 0% */
 .progress-bar {
   width: 80%;
-  margin: 0 auto 20px;
+  height: 12px;
+  background: #333;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  overflow: hidden;
 }
-
-/* Lista de aulas ajustada */
-#lesson-list {
-  width: 80%;
-  margin: 0 auto;
-}
-
-#lesson-list li {
-  position: relative;
-  padding-left: 35px;
-  transition: all 0.3s ease;
-}
-
-#lesson-list li::before {
-  content: '';
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  border: 2px solid #00bfff;
-  border-radius: 50%;
-}
-
-#lesson-list li.completed::before {
+.progress-fill {
+  width: 0% !important;
+  height: 100%;
   background: #00bfff;
+  transition: width 0.5s ease;
 }
 
-/* Remove padding lateral no mobile */
-@media (max-width: 768px) {
-  .carousel-container {
-    padding: 0 15px;
-  }
-  
-  .carousel-container .carousel-btn {
-    display: none; /* Oculta botões em mobile */
-  }
-  
-  .card {
-    min-width: 85vw;
-  }
-  
-  .module-detail {
-    padding: 20px 10px;
-  }
-  
-  .progress-bar,
-  #lesson-list {
-    width: 95%;
-  }
+/* LISTA DE AULAS - SEM AULA MARCADA POR PADRÃO */
+#lesson-list {
+  list-style: none;
+  width: 80%;
+}
+#lesson-list li {
+  background: #1c1c1c;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  color: #ddd;
+}
+
+/* UTILIDADES */
+.hidden {
+  display: none;
 }
