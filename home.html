@@ -1,4 +1,4 @@
-<!-- home.html - Área Protegida com Módulos e Aulas -->
+<!-- home.html - Área Protegida com Módulos e Aulas em Carrossel -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -19,8 +19,10 @@
   <!-- Conteúdo principal -->
   <main class="modules-container">
     <h1>Seus Módulos</h1>
-    <div class="cards" id="cards-container">
-      <!-- Cards serão gerados via JavaScript -->
+    <div class="carousel-container">
+      <button class="carousel-btn prev">‹</button>
+      <div class="cards" id="cards-container"></div>
+      <button class="carousel-btn next">›</button>
     </div>
   </main>
 
@@ -78,6 +80,17 @@
         card.addEventListener('click', () => openModule(mod.id));
         container.appendChild(card);
       });
+
+      // Scroll do carrossel
+      const prevBtn = document.querySelector('.carousel-btn.prev');
+      const nextBtn = document.querySelector('.carousel-btn.next');
+      const carousel = document.getElementById('cards-container');
+      prevBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: -300, behavior: 'smooth' });
+      });
+      nextBtn.addEventListener('click', () => {
+        carousel.scrollBy({ left: 300, behavior: 'smooth' });
+      });
     });
 
     // Abre a seção de detalhes do módulo
@@ -89,11 +102,9 @@
       mod.lessons.forEach((lesson, index) => {
         const li = document.createElement('li');
         li.innerText = lesson;
-        // Exemplo: marcar metade das aulas como concluídas
         if (index < Math.floor(mod.lessons.length / 2)) li.classList.add('completed');
         listEl.appendChild(li);
       });
-      // Exemplo: progresso aleatório
       const percent = Math.floor((mod.lessons.filter((_,i) => i < Math.floor(mod.lessons.length / 2)).length / mod.lessons.length) * 100);
       document.getElementById('progress-fill').style.width = percent + '%';
       document.getElementById('module-detail').classList.remove('hidden');
