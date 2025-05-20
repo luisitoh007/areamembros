@@ -111,7 +111,7 @@ body {
   text-align: center;
 }
 
-/* CARROSSEL DE MÓDULOS */
+/* CARROSSEL DE MÓDULOS - 2 LINHAS */
 .carousel-container {
   display: flex;
   align-items: center;
@@ -144,33 +144,35 @@ body {
 }
 .carousel-container .cards {
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
-  flex-wrap: nowrap;
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 0 60px;
+  max-height: calc(2 * 300px + 20px); /* altura para 2 linhas de cards */
 }
 .carousel-container .cards::-webkit-scrollbar {
   display: none;
 }
 
-/* CARDS DE MÓDULOS */
+/* CARDS DE MÓDULOS (MAIORES) */
 .card {
   background: #121212;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  min-width: 240px;
+  min-width: 300px;
   flex: 0 0 auto;
   cursor: pointer;
   transition: transform 0.2s;
+  min-height: 260px;
 }
 .card:hover {
   transform: translateY(-5px);
 }
 .card img {
   width: 100%;
-  height: 140px;
+  height: 160px;
   object-fit: cover;
 }
 .card-info {
@@ -186,12 +188,12 @@ body {
   margin-bottom: 8px;
 }
 .card-info h2 {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #ffffff;
   margin-top: 4px;
 }
 
-/* DETALHE DE MÓDULO */
+/* DETALHE DE MÓDULO - SEM PROGRESSO (SEM COMPLETION DEFAULT) */
 .module-detail {
   position: fixed;
   top: 0;
@@ -222,9 +224,11 @@ body {
   color: #00bfff;
   margin-bottom: 20px;
   font-size: 1.8rem;
+  text-align: center;
+  width: 80%;
 }
 
-/* BARRA DE PROGRESSO */
+/* BARRA DE PROGRESSO - INICIAL 0% */
 .progress-bar {
   width: 80%;
   height: 12px;
@@ -234,13 +238,13 @@ body {
   overflow: hidden;
 }
 .progress-fill {
-  width: 0%;
+  width: 0% !important;
   height: 100%;
   background: #00bfff;
   transition: width 0.5s ease;
 }
 
-/* LISTA DE AULAS */
+/* LISTA DE AULAS - SEM AULA MARCADA POR PADRÃO */
 #lesson-list {
   list-style: none;
   width: 80%;
@@ -251,10 +255,6 @@ body {
   margin-bottom: 10px;
   border-radius: 4px;
   color: #ddd;
-}
-#lesson-list li.completed {
-  background: #00bfff;
-  color: #0a1935;
 }
 
 /* UTILIDADES */
