@@ -1,0 +1,99 @@
+<!-- home.html - Área Protegida com Módulos e Aulas -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlackMind Academy - Módulos</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+  <nav class="nav-bar">
+    <div class="logo">BlackMind Academy</div>
+    <button onclick="logout()" class="btn-logout">Sair</button>
+  </nav>
+  <main class="modules-container">
+    <h1>Seus Módulos</h1>
+    <div class="cards">
+      <!-- Gerar 10 módulos -->
+      <script>
+        const modules = [];
+        for (let i = 1; i <= 10; i++) {
+          modules.push({
+            id: i,
+            title: `Módulo ${i}`,
+            thumb: `https://via.placeholder.com/300x200?text=Módulo+${i}`,
+            lessons: [
+              `Aula 1 do Módulo ${i}`,
+              `Aula 2 do Módulo ${i}`,
+              `Aula 3 do Módulo ${i}`
+            ]
+          });
+        }
+        modules.forEach(mod => {
+          document.write(`
+            <div class="card" onclick="openModule(${mod.id})">
+              <img src="${mod.thumb}" alt="Thumb Módulo ${mod.id}" />
+              <div class="card-info">
+                <span class="module-label">Módulo ${mod.id}</span>
+                <h2>${mod.title}</h2>
+              </div>
+            </div>
+          `);
+        });
+      </script>
+    </div>
+    <!-- Detalhes do módulo -->
+    <section id="module-detail" class="module-detail hidden">
+      <button class="back-btn" onclick="closeModule()">← Voltar</button>
+      <h2 id="detail-title"></h2>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <ul id="lesson-list"></ul>
+    </section>
+  </main>
+
+  <script>
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
+      authDomain: "black-mind-d6547.firebaseapp.com",
+      projectId: "black-mind-d6547",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Auth guard
+    auth.onAuthStateChanged(user => {
+      if (!user) window.location.href = 'index.html';
+    });
+
+    function logout() {
+      auth.signOut().then(() => window.location.href = 'index.html');
+    }
+
+    // Módulos
+    const modulesData = modules;
+    function openModule(id) {
+      const mod = modulesData.find(m => m.id === id);
+      document.getElementById('detail-title').innerText = mod.title;
+      const listEl = document.getElementById('lesson-list');
+      listEl.innerHTML = '';
+      mod.lessons.forEach(lesson => {
+        const li = document.createElement('li');
+        li.innerText = lesson;
+        listEl.appendChild(li);
+      });
+      // Exemplo: progresso fixo de 0%
+      document.getElementById('progress-fill').style.width = '0%';
+      document.querySelector('.module-detail').classList.remove('hidden');
+    }
+    function closeModule() {
+      document.querySelector('.module-detail').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
