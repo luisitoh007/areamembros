@@ -1,4 +1,4 @@
-<!-- home.html - Área Protegida com Módulos e Aulas em Carrossel -->
+<!-- home.html - Área Protegida com Módulos e Aulas -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -86,27 +86,27 @@
       const nextBtn = document.querySelector('.carousel-btn.next');
       const carousel = document.getElementById('cards-container');
       prevBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: -300, behavior: 'smooth' });
+        carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
       });
       nextBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: 300, behavior: 'smooth' });
+        carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
       });
     });
 
-    // Abre a seção de detalhes do módulo
+    // Abre a seção de detalhes do módulo (sem marcações padrão)
     function openModule(id) {
       const mod = modulesData.find(m => m.id === id);
       document.getElementById('detail-title').innerText = mod.title;
       const listEl = document.getElementById('lesson-list');
       listEl.innerHTML = '';
-      mod.lessons.forEach((lesson, index) => {
+      // Lista todas as aulas sem marcações concluídas
+      mod.lessons.forEach(lesson => {
         const li = document.createElement('li');
         li.innerText = lesson;
-        if (index < Math.floor(mod.lessons.length / 2)) li.classList.add('completed');
         listEl.appendChild(li);
       });
-      const percent = Math.floor((mod.lessons.filter((_,i) => i < Math.floor(mod.lessons.length / 2)).length / mod.lessons.length) * 100);
-      document.getElementById('progress-fill').style.width = percent + '%';
+      // Progresso zerado
+      document.getElementById('progress-fill').style.width = '0%';
       document.getElementById('module-detail').classList.remove('hidden');
     }
 
