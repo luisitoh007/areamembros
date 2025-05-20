@@ -105,156 +105,241 @@ body {
   margin: 20px auto;
 }
 .modules-container h1 {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   font-size: 2rem;
   color: #00bfff;
   text-align: center;
 }
 
-/* CARROSSEL DE MÓDULOS - 2 LINHAS */
+/* CARROSSEL DE MÓDULOS - NOVO ESTILO */
 .carousel-container {
-  display: flex;
-  align-items: center;
   position: relative;
-  overflow: hidden;
-  padding: 10px 0;
+  padding: 0 50px;
+  margin: 20px 0;
 }
-.carousel-container .carousel-btn {
-  background: rgba(10, 25, 53, 0.8);
+
+.carousel-container .cards {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 20px 0;
+  scroll-behavior: smooth;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.carousel-container .cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* CARDS DOS MÓDULOS */
+.card {
+  scroll-snap-align: start;
+  min-width: 300px;
+  background: #121212;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  flex-shrink: 0;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 6px 20px rgba(0, 191, 255, 0.3);
+}
+
+.card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-bottom: 3px solid #00bfff;
+}
+
+.card-info {
+  padding: 15px;
+}
+
+.module-label {
+  display: inline-block;
+  background: #00bfff;
+  color: #0a1935;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.card-info h2 {
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 8px 0;
+}
+
+/* BOTÕES CARROSSEL */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(10, 25, 53, 0.9);
   border: none;
   color: #00bfff;
-  font-size: 2rem;
-  width: 40px;
-  height: 40px;
+  font-size: 2.5rem;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
   z-index: 10;
-}
-.carousel-container .prev {
-  left: 10px;
-}
-.carousel-container .next {
-  right: 10px;
-}
-.carousel-container .cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 0 60px;
-  max-height: calc(2 * 300px + 20px); /* altura para 2 linhas de cards */
-}
-.carousel-container .cards::-webkit-scrollbar {
-  display: none;
+  transition: all 0.3s;
 }
 
-/* CARDS DE MÓDULOS (MAIORES) */
-.card {
-  background: #121212;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  min-width: 300px;
-  flex: 0 0 auto;
-  cursor: pointer;
-  transition: transform 0.2s;
-  min-height: 260px;
-}
-.card:hover {
-  transform: translateY(-5px);
-}
-.card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-.card-info {
-  padding: 12px;
-}
-.module-label {
-  display: inline-block;
+.carousel-btn:hover {
   background: #00bfff;
   color: #0a1935;
-  font-size: 0.8rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-bottom: 8px;
-}
-.card-info h2 {
-  font-size: 1.2rem;
-  color: #ffffff;
-  margin-top: 4px;
 }
 
-/* DETALHE DE MÓDULO - SEM PROGRESSO (SEM COMPLETION DEFAULT) */
+.prev {
+  left: 15px;
+}
+
+.next {
+  right: 15px;
+}
+
+/* DETALHES DO MÓDULO */
 .module-detail {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.95);
+  padding: 40px 20px;
+  z-index: 1000;
   overflow-y: auto;
-  z-index: 100;
 }
+
 .module-detail.hidden {
   display: none;
 }
-.module-detail .back-btn {
-  align-self: flex-start;
-  background: transparent;
+
+.back-btn {
+  background: none;
   border: none;
   color: #00bfff;
-  font-size: 1rem;
+  font-size: 1.1rem;
   cursor: pointer;
-  margin-bottom: 20px;
-}
-.module-detail h2 {
-  color: #00bfff;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
-  text-align: center;
-  width: 80%;
+  margin-bottom: 30px;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background 0.3s;
 }
 
-/* BARRA DE PROGRESSO - INICIAL 0% */
+.back-btn:hover {
+  background: rgba(0, 191, 255, 0.1);
+}
+
+/* BARRA DE PROGRESSO */
 .progress-bar {
   width: 80%;
+  max-width: 600px;
   height: 12px;
-  background: #333;
+  background: #2a2a2a;
   border-radius: 6px;
-  margin-bottom: 20px;
+  margin: 20px auto;
   overflow: hidden;
 }
+
 .progress-fill {
-  width: 0% !important;
   height: 100%;
   background: #00bfff;
+  width: 0%;
   transition: width 0.5s ease;
 }
 
-/* LISTA DE AULAS - SEM AULA MARCADA POR PADRÃO */
+/* LISTA DE AULAS */
 #lesson-list {
   list-style: none;
   width: 80%;
+  max-width: 600px;
+  margin: 0 auto;
 }
+
 #lesson-list li {
-  background: #1c1c1c;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  color: #ddd;
+  background: #1a1a1a;
+  padding: 15px 20px;
+  margin: 10px 0;
+  border-radius: 6px;
+  position: relative;
+  padding-left: 45px;
+  transition: all 0.3s;
+}
+
+#lesson-list li::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #00bfff;
+  border-radius: 50%;
+}
+
+#lesson-list li.completed {
+  background: rgba(0, 191, 255, 0.1);
+  color: #00bfff;
+}
+
+#lesson-list li.completed::before {
+  background: #00bfff;
+  border-color: #00bfff;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  .carousel-container {
+    padding: 0 15px;
+  }
+  
+  .carousel-btn {
+    display: none;
+  }
+  
+  .card {
+    min-width: 85vw;
+  }
+  
+  .module-detail {
+    padding: 20px 15px;
+  }
+  
+  .progress-bar,
+  #lesson-list {
+    width: 95%;
+  }
+  
+  #lesson-list li {
+    padding-left: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 25px;
+    margin: 15px;
+  }
+  
+  .card img {
+    height: 150px;
+  }
 }
 
 /* UTILIDADES */
