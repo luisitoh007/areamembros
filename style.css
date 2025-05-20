@@ -236,3 +236,27 @@ body {
   display: none;
 }
 
+/* === CARROSSEL DE MÓDULOS === */
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.carousel-container .carousel-btn {
+  background: rgba(10, 25, 53, 0.8);
+  border: none;
+  :contentReference[oaicite:0]{index=0} height: 40px;
+  border-:contentReference[oaicite:1]{index=1}tent: center;
+  :contentReference[oaicite:2]{index=2}: 10;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.carousel-con:contentReference[oaicite:3]{index=3}  display: flex;
+  gap: :contentReference[oaicite:4]{index=4}-container .card:contentReference[oaicite:5]{index=5}a** seu `style.css`.  
+2. **Cole** esse bloco ao **final** do:contentReference[oaicite:6]{index=6}r que o container `.card:contentReference[oaicite:7]{index=7}tal), com scroll:contentReference[oaicite:8]{index=8}r, verifique:
+- Se o HTML **tem** a classe `caro:contentReference[oaicite:9]{index=9}sobrescrevendo o :contentReference[oaicite:10]{index=10}, tudo deve entr:contentReference[oaicite:11]{index=11}er dúvida ou comportamento estranho, me manda outro pr:contentReference[oaicite:12]{index=12}
+::contentReference[oaicite:13]{index=13}
+:contentReference[oaicite:14]{index=14}:contentReference[oaicite:15]{index=15}
