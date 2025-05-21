@@ -45,7 +45,7 @@ body { font-family:Arial,sans-serif; background:linear-gradient(135deg,#0a1935,#
   box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   cursor: pointer;
   /* Altura mínima fixa para evitar redimensionamento durante o carregamento */
-  min-height: 320px;
+  min-height: 250px;
 }}
 .card img {
   width: 100%;
