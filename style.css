@@ -39,7 +39,13 @@ body { font-family:Arial,sans-serif; background:linear-gradient(135deg,#0a1935,#
 
 /* CARD DIMENSIONADO MAIOR */
 .card { flex:0 0 32%; background:#121212; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); cursor:pointer; }
-.card img { width:100%; height:220px; object-fit:cover; border-top-left-radius:8px; border-top-right-radius:8px; }
+.card img {
+  width: 100%;
+  height: 260px; /* Aumentado para ocupar mais altura */
+  object-fit: cover;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
 .card-info { padding:20px; }
 .module-label { display:inline-block; background:#00bfff; color:#0a1935; font-size:0.9rem; padding:6px 10px; border-radius:4px; }
 .card-info h2 { margin-top:14px; font-size:1.3rem; color:#fff; }
