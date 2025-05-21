@@ -1,4 +1,4 @@
-<!-- home.html - Área Protegida com Módulos e Aulas -->
+<!-- home.html - Módulos em 2 linhas, 3 visíveis por vez -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -10,110 +10,80 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
 <body>
-  <!-- Navbar -->
   <nav class="nav-bar">
     <div class="logo">BlackMind Academy</div>
     <button onclick="logout()" class="btn-logout">Sair</button>
   </nav>
 
-  <!-- Conteúdo principal -->
   <main class="modules-container">
     <h1>Seus Módulos</h1>
+
+    <!-- Linha 1 -->
     <div class="carousel-container">
-      <button class="carousel-btn prev">‹</button>
-      <div class="cards" id="cards-container"></div>
-      <button class="carousel-btn next">›</button>
+      <button class="carousel-btn prev" data-row="1">‹</button>
+      <div class="viewport" id="viewport-1">
+        <div class="cards-grid" id="cards-row-1"></div>
+      </div>
+      <button class="carousel-btn next" data-row="1">›</button>
+    </div>
+
+    <!-- Linha 2 -->
+    <div class="carousel-container">
+      <button class="carousel-btn prev" data-row="2">‹</button>
+      <div class="viewport" id="viewport-2">
+        <div class="cards-grid" id="cards-row-2"></div>
+      </div>
+      <button class="carousel-btn next" data-row="2">›</button>
     </div>
   </main>
 
-  <!-- Detalhe de Módulo -->
   <div id="module-detail" class="module-detail hidden">
     <button class="back-btn" onclick="closeModule()">← Voltar</button>
     <h2 id="detail-title"></h2>
-    <div class="progress-bar">
-      <div id="progress-fill" class="progress-fill"></div>
-    </div>
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
     <ul id="lesson-list" class="lesson-list"></ul>
   </div>
 
   <script>
-    // Configuração Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
-      authDomain: "black-mind-d6547.firebaseapp.com",
-      projectId: "black-mind-d6547",
-    };
+    // Firebase init
+    const firebaseConfig = { apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U", authDomain: "black-mind-d6547.firebaseapp.com", projectId: "black-mind-d6547" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    auth.onAuthStateChanged(u => { if (!u) window.location.href='index.html'; });
+    function logout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-    // Verifica autenticação
-    auth.onAuthStateChanged(user => {
-      if (!user) window.location.href = 'index.html';
+    // Mock modules data
+    const modulesData = Array.from({length:10},(_,i)=>({id:i+1,title:`Módulo ${i+1}`,thumb:`https://via.placeholder.com/300x200?text=Módulo+${i+1}`,lessons:Array.from({length:5},(_,j)=>`Aula ${j+1} do Módulo ${i+1}`)}));
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      // Fill two rows
+      const row1 = document.getElementById('cards-row-1'), row2 = document.getElementById('cards-row-2');
+      modulesData.slice(0,5).forEach(mod=>addCard(mod,row1));
+      modulesData.slice(5).forEach(mod=>addCard(mod,row2));
+      function addCard(mod,container){
+        const c=document.createElement('div');c.className='card';
+        c.innerHTML = `<img src='${mod.thumb}' alt='Thumb ${mod.title}'/><div class='card-info'><span class='module-label'>Módulo ${mod.id}</span><h2>${mod.title}</h2></div>`;
+        c.onclick=()=>openModule(mod.id);
+        container.appendChild(c);
+      }
+      // Buttons scroll
+      document.querySelectorAll('.carousel-btn').forEach(btn=>btn.addEventListener('click',()=>{
+        const row=btn.dataset.row;
+        const vp=document.getElementById(`viewport-${row}`);
+        const shift = vp.clientWidth; // shows 3 cards width
+        vp.scrollBy({left:btn.classList.contains('next')?shift:-shift,behavior:'smooth'});
+      }));
     });
 
-    // Função de logout
-    function logout() {
-      auth.signOut().then(() => window.location.href = 'index.html');
-    }
-
-    // Dados dos módulos
-    const modulesData = Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      title: `Módulo ${i + 1}`,
-      thumb: `https://via.placeholder.com/300x200?text=Módulo+${i + 1}`,
-      lessons: Array.from({ length: 5 }, (_, j) => `Aula ${j + 1} do Módulo ${i + 1}`)
-    }));
-
-    // Gera os cards após carregar DOM
-    document.addEventListener('DOMContentLoaded', () => {
-      const container = document.getElementById('cards-container');
-      modulesData.forEach(mod => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${mod.thumb}" alt="Thumb Módulo ${mod.id}" />
-          <div class="card-info">
-            <span class="module-label">Módulo ${mod.id}</span>
-            <h2>${mod.title}</h2>
-          </div>
-        `;
-        card.addEventListener('click', () => openModule(mod.id));
-        container.appendChild(card);
-      });
-
-      // Scroll do carrossel
-      const prevBtn = document.querySelector('.carousel-btn.prev');
-      const nextBtn = document.querySelector('.carousel-btn.next');
-      const carousel = document.getElementById('cards-container');
-      prevBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: -carousel.offsetWidth, behavior: 'smooth' });
-      });
-      nextBtn.addEventListener('click', () => {
-        carousel.scrollBy({ left: carousel.offsetWidth, behavior: 'smooth' });
-      });
-    });
-
-    // Abre a seção de detalhes do módulo (sem marcações padrão)
-    function openModule(id) {
-      const mod = modulesData.find(m => m.id === id);
-      document.getElementById('detail-title').innerText = mod.title;
-      const listEl = document.getElementById('lesson-list');
-      listEl.innerHTML = '';
-      // Lista todas as aulas sem marcações concluídas
-      mod.lessons.forEach(lesson => {
-        const li = document.createElement('li');
-        li.innerText = lesson;
-        listEl.appendChild(li);
-      });
-      // Progresso zerado
-      document.getElementById('progress-fill').style.width = '0%';
+    function openModule(id){
+      const mod = modulesData.find(m=>m.id===id);
+      document.getElementById('detail-title').innerText=mod.title;
+      const list=document.getElementById('lesson-list'); list.innerHTML='';
+      mod.lessons.forEach(ls=>{let li=document.createElement('li');li.textContent=ls;list.appendChild(li);});
+      document.getElementById('progress-fill').style.width='0%';
       document.getElementById('module-detail').classList.remove('hidden');
     }
-
-    // Fecha a seção de detalhes
-    function closeModule() {
-      document.getElementById('module-detail').classList.add('hidden');
-    }
+    function closeModule(){document.getElementById('module-detail').classList.add('hidden');}
   </script>
 </body>
 </html>
