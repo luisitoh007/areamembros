@@ -1,13 +1,14 @@
+<!-- register.html - Tela de Cadastro Ajustada -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cadastre-se - BlackMind Academy</n  >
+  <title>Cadastre-se - BlackMind Academy</title>
   <link rel="stylesheet" href="style.css" />
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js" defer></script>
 </head>
 <body>
   <div class="login-container">
@@ -17,7 +18,7 @@
     <input type="email" id="email" placeholder="Email" />
     <input type="password" id="password" placeholder="Senha" />
     <input type="password" id="confirmPassword" placeholder="Confirmar senha" />
-    <button onclick="register()">Cadastrar</button>
+    <button id="btn-register">Cadastrar</button>
     <p>Já tem conta? <a href="index.html">Faça login</a></p>
   </div>
 
@@ -31,9 +32,8 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    /**
-     * Realiza o cadastro de um novo usuário
-     */
+    document.getElementById('btn-register').addEventListener('click', register);
+
     function register() {
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -51,11 +51,9 @@
 
       auth.createUserWithEmailAndPassword(email, password)
         .then(userCredential => {
-          // Atualiza displayName do perfil
           return userCredential.user.updateProfile({ displayName: name });
         })
         .then(() => {
-          // Redireciona para a home com módulos
           window.location.href = 'home.html';
         })
         .catch(error => {
