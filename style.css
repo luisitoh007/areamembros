@@ -1,263 +1,58 @@
-/* style.css - Estilo padrão e aprimorado BlackMind Academy */
+/* style.css - BlackMind Academy Geral e Carrossel 2 Rows 3 visíveis */
 
 /* RESET E BASE */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-body {
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #0a1935, #1c1c1c);
-  color: #ffffff;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:Arial,sans-serif; background:linear-gradient(135deg,#0a1935,#1c1c1c); color:#fff; min-height:100vh; display:flex; flex-direction:column; }
 
 /* LOGIN / REGISTER */
-.login-container {
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  max-width: 400px;
-  margin: auto;
-}
-.login-container h1 {
-  color: #00bfff;
-  margin-bottom: 10px;
-}
-.login-container h2 {
-  margin-bottom: 20px;
-  color: #ccc;
-}
-.login-container input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border: none;
-  border-radius: 5px;
-  background: #333;
-  color: #fff;
-}
-.login-container button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 5px;
-  background: #00bfff;
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-.login-container button:hover {
-  background: #009acd;
-}
-.login-container p {
-  margin-top: 15px;
-  font-size: 14px;
-}
-.login-container a {
-  color: #00bfff;
-  text-decoration: none;
-}
-.login-container a:hover {
-  text-decoration: underline;
-}
+.login-container { max-width:400px; margin:80px auto; background:rgba(0,0,0,0.7); padding:40px; border-radius:10px; box-shadow:0 0 20px rgba(0,0,0,0.5); text-align:center; }
+.login-container h1 { color:#00bfff; margin-bottom:10px; }
+.login-container input, .login-container button { width:100%; padding:12px; margin:10px 0; border:none; border-radius:5px; }
+.login-container input { background:#333; color:#fff; }
+.login-container button { background:#00bfff; color:#0a1935; font-size:16px; cursor:pointer; transition:background .3s; }
+.login-container button:hover { background:#009acd; }
+.login-container p { margin-top:15px; font-size:14px; }
+.login-container a { color:#00bfff; text-decoration:none; }
+.login-container a:hover { text-decoration:underline; }
 
 /* NAVBAR */
-.nav-bar {
-  width: 100%;
-  background-color: #0a1935;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-}
-.nav-bar .logo {
-  font-size: 1.5rem;
-  color: #00bfff;
-  font-weight: bold;
-}
-.nav-bar .btn-logout {
-  background: transparent;
-  border: 2px solid #00bfff;
-  color: #00bfff;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-}
-.nav-bar .btn-logout:hover {
-  background: #00bfff;
-  color: #0a1935;
-}
+.nav-bar { width:100%; background:#0a1935; padding:10px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 8px rgba(0,0,0,0.6); }
+.nav-bar .logo { font-size:1.5rem; color:#00bfff; font-weight:bold; }
+.nav-bar .btn-logout { border:2px solid #00bfff; background:transparent; color:#00bfff; padding:6px 12px; border-radius:4px; cursor:pointer; transition:background .3s,color .3s; }
+.nav-bar .btn-logout:hover { background:#00bfff; color:#0a1935; }
 
 /* CONTAINER PRINCIPAL */
-.modules-container {
-  flex: 1;
-  padding: 20px;
-  max-width: 1200px;
-  margin: 20px auto;
-}
-.modules-container h1 {
-  margin-bottom: 20px;
-  font-size: 2rem;
-  color: #00bfff;
-  text-align: center;
-}
+.modules-container { width:100%; max-width:960px; margin:40px auto; padding:0 20px; }
+.modules-container h1 { text-align:center; font-size:2rem; color:#00bfff; margin-bottom:20px; }
 
-/* CARROSSEL DE MÓDULOS - 2 LINHAS */
-.carousel-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  overflow: hidden;
-  padding: 10px 0;
-}
-.carousel-container .carousel-btn {
-  background: rgba(10, 25, 53, 0.8);
-  border: none;
-  color: #00bfff;
-  font-size: 2rem;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-}
-.carousel-container .prev {
-  left: 10px;
-}
-.carousel-container .next {
-  right: 10px;
-}
-.carousel-container .cards {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 0 60px;
-  max-height: calc(2 * 300px + 20px); /* altura para 2 linhas de cards */
-}
-.carousel-container .cards::-webkit-scrollbar {
-  display: none;
-}
+/* CARROSSEL EM DUAS LINHAS */
+.carousel-container { position:relative; margin-bottom:40px; }
+.carousel-container .carousel-btn { position:absolute; top:50%; transform:translateY(-50%); width:40px; height:40px; border:none; border-radius:50%; background:rgba(10,25,53,0.8); color:#00bfff; font-size:1.5rem; cursor:pointer; z-index:10; }
+.carousel-container .prev { left:10px; }
+.carousel-container .next { right:10px; }
+.viewport { overflow:hidden; margin:0 auto; }
+.cards-grid { display:flex; gap:20px; }
+.card { flex:0 0 auto; width:calc((100% - 40px)/3); max-width:300px; background:#121212; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); cursor:pointer; }
+.card img { width:100%; height:160px; object-fit:cover; border-top-left-radius:8px; border-top-right-radius:8px; }
+.card-info { padding:12px; }
+.module-label { display:inline-block; background:#00bfff; color:#0a1935; font-size:0.8rem; padding:2px 6px; border-radius:4px; }
+.card-info h2 { margin-top:8px; font-size:1.1rem; color:#fff; }
 
-/* CARDS DE MÓDULOS (MAIORES) */
-.card {
-  background: #121212;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  min-width: 300px;
-  flex: 0 0 auto;
-  cursor: pointer;
-  transition: transform 0.2s;
-  min-height: 260px;
-}
-.card:hover {
-  transform: translateY(-5px);
-}
-.card img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-}
-.card-info {
-  padding: 12px;
-}
-.module-label {
-  display: inline-block;
-  background: #00bfff;
-  color: #0a1935;
-  font-size: 0.8rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-bottom: 8px;
-}
-.card-info h2 {
-  font-size: 1.2rem;
-  color: #ffffff;
-  margin-top: 4px;
-}
+/* DETALHE DE MÓDULO */
+.module-detail { position:fixed; inset:0; background:rgba(0,0,0,0.9); display:flex; flex-direction:column; align-items:center; padding:40px; overflow-y:auto; z-index:100; }
+.module-detail.hidden { display:none; }
+.module-detail .back-btn { align-self:flex-start; background:none; border:none; color:#00bfff; font-size:1rem; margin-bottom:20px; cursor:pointer; }
+.module-detail h2 { color:#00bfff; font-size:1.8rem; margin-bottom:20px; text-align:center; width:80%; }
+.progress-bar { width:80%; height:12px; background:#333; border-radius:6px; overflow:hidden; margin-bottom:20px; }
+.progress-fill { width:0% !important; height:100%; background:#00bfff; transition:width .5s ease; }
+.lesson-list { list-style:none; width:80%; }
+.lesson-list li { background:#1c1c1c; padding:12px; margin-bottom:10px; border-radius:4px; color:#ddd; }
 
-/* DETALHE DE MÓDULO - SEM PROGRESSO (SEM COMPLETION DEFAULT) */
-.module-detail {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 40px;
-  overflow-y: auto;
-  z-index: 100;
-}
-.module-detail.hidden {
-  display: none;
-}
-.module-detail .back-btn {
-  align-self: flex-start;
-  background: transparent;
-  border: none;
-  color: #00bfff;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-.module-detail h2 {
-  color: #00bfff;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
-  text-align: center;
-  width: 80%;
-}
+/* VIEWPORT ESPECIFICO PARA DUAS LINHAS */
+#viewport-1, #viewport-2 { width: calc(3 * ((100% - 40px) / 3) + 40px); } /* 3 cards width + 2 gaps */
 
-/* BARRA DE PROGRESSO - INICIAL 0% */
-.progress-bar {
-  width: 80%;
-  height: 12px;
-  background: #333;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  overflow: hidden;
-}
-.progress-fill {
-  width: 0% !important;
-  height: 100%;
-  background: #00bfff;
-  transition: width 0.5s ease;
-}
+/* OCULTAR SCROLLBAR */
+.cards-grid::-webkit-scrollbar { display:none; }
 
-/* LISTA DE AULAS - SEM AULA MARCADA POR PADRÃO */
-#lesson-list {
-  list-style: none;
-  width: 80%;
-}
-#lesson-list li {
-  background: #1c1c1c;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 4px;
-  color: #ddd;
-}
-
-/* UTILIDADES */
-.hidden {
-  display: none;
-}
+/* UTILITARIOS */
+.hidden { display:none; }
