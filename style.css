@@ -38,7 +38,15 @@ body { font-family:Arial,sans-serif; background:linear-gradient(135deg,#0a1935,#
 .cards-grid { display:flex; gap:20px; transition: transform .5s ease; }
 
 /* CARD DIMENSIONADO MAIOR */
-.card { flex:0 0 32%; background:#121212; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); cursor:pointer; }
+.card {
+  flex: 0 0 32%;
+  background: #121212;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  cursor: pointer;
+  /* Altura mínima fixa para evitar redimensionamento durante o carregamento */
+  min-height: 360px;
+}}
 .card img {
   width: 100%;
   height: 260px; /* Aumentado para ocupar mais altura */
