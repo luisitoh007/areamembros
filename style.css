@@ -49,7 +49,7 @@ body { font-family:Arial,sans-serif; background:linear-gradient(135deg,#0a1935,#
 }}
 .card img {
   width: 100%;
-  height: 260px; /* Aumentado para ocupar mais altura */
+  height: 230px; /* Aumentado para ocupar mais altura */
   object-fit: cover;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
