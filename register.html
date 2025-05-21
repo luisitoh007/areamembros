@@ -1,4 +1,4 @@
-<!-- register.html - Tela de Cadastro Ajustada -->
+<!-- register.html - Tela de Cadastro com Firestore -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,6 +9,7 @@
   <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js" defer></script>
 </head>
 <body>
   <div class="login-container">
@@ -23,14 +24,16 @@
   </div>
 
   <script>
-    // Firebase configuration
+    // Configuração Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
       authDomain: "black-mind-d6547.firebaseapp.com",
       projectId: "black-mind-d6547"
     };
+    // Inicializa Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.firestore();
 
     document.getElementById('btn-register').addEventListener('click', register);
 
@@ -40,6 +43,7 @@
       const password = document.getElementById('password').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
 
+      // Validações iniciais
       if (!name || !email || !password) {
         alert('Por favor, preencha todos os campos.');
         return;
@@ -49,11 +53,18 @@
         return;
       }
 
+      // Cria usuário no Auth
       auth.createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          return userCredential.user.updateProfile({ displayName: name });
+        .then(({ user }) => {
+          // Atualiza displayName
+          return user.updateProfile({ displayName: name }).then(() => user);
+        })
+        .then(user => {
+          // Inicializa progresso vazio no Firestore
+          return db.collection('userProgress').doc(user.uid).set({ modules: {} });
         })
         .then(() => {
+          // Redireciona para home
           window.location.href = 'home.html';
         })
         .catch(error => {
