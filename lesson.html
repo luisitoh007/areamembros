@@ -9,6 +9,119 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js" defer></script>
+  <script> // Firestore integration for lesson.html and home.html
+// Assumes Firebase SDK and initialization already present
+
+// Shared initialization (e.g. in common script)
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+const auth = getAuth();
+const db = getFirestore();
+
+/* -------- lesson.html -------- */
+(async function initLessonPage() {
+  onAuthStateChanged(auth, async user => {
+    if (!user) return window.location.href = 'index.html';
+    const params = new URLSearchParams(window.location.search);
+    const modId = params.get('mod');
+    const lessonIdx = parseInt(params.get('lesson'), 10);
+
+    // Fetch module lessons
+    const moduleSnap = await getDoc(doc(db, 'modules', modId));
+    const lessons = moduleSnap.data().lessons;
+
+    // Render iframe
+    const videoUrl = lessons[lessonIdx].videoUrl;
+    document.getElementById('video-player').src = `https://www.youtube.com/embed/${videoUrl}?rel=0&modestbranding=1&autoplay=1`;
+
+    // Fetch user progress
+    const userProgRef = doc(db, 'userProgress', user.uid);
+    const userProgSnap = await getDoc(userProgRef);
+    const completed = (userProgSnap.data().modules?.[modId]?.completedLessons) || [];
+
+    // Render sidebar
+    const list = document.getElementById('lessons-list');
+    lessons.forEach((lesson, idx) => {
+      const li = document.createElement('li');
+      li.textContent = lesson.title;
+      li.classList.add('lesson-item');
+      li.dataset.lessonIdx = idx;
+      if (idx === lessonIdx) li.classList.add('active');
+      if (completed.includes(idx)) li.classList.add('completed');
+      li.addEventListener('click', async () => {
+        await toggleLesson(modId, idx, user.uid);
+        window.location.href = `lesson.html?mod=${modId}&lesson=${idx}`;
+      });
+      list.appendChild(li);
+    });
+  });
+})();
+
+/**
+ * Adds or removes a lesson index in completedLessons, toggling its state
+ */
+async function toggleLesson(modId, idx, uid) {
+  const userProgRef = doc(db, 'userProgress', uid);
+  const userProgSnap = await getDoc(userProgRef);
+  const completed = (userProgSnap.data().modules?.[modId]?.completedLessons) || [];
+  const modulePath = `modules.${modId}.completedLessons`;
+
+  if (completed.includes(idx)) {
+    // remove
+    await updateDoc(userProgRef, {
+      [modulePath]: arrayRemove(idx)
+    });
+  } else {
+    // add
+    await updateDoc(userProgRef, {
+      [modulePath]: arrayUnion(idx)
+    });
+  }
+}
+
+/* -------- home.html -------- */
+(async function initHomePage() {
+  onAuthStateChanged(auth, async user => {
+    if (!user) return window.location.href = 'index.html';
+
+    // Fetch modules definitions
+    const modulesCol = collection(db, 'modules');
+    const modulesSnap = await getDocs(modulesCol);
+    const modules = modulesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Fetch user progress
+    const userProgRef = doc(db, 'userProgress', user.uid);
+    const userProgSnap = await getDoc(userProgRef);
+    const userModules = userProgSnap.data().modules || {};
+
+    modules.forEach((mod, idx) => {
+      // determine carousel viewport based on index
+      const viewportId = idx < 5 ? 'viewport-1' : 'viewport-2';
+      const container = document.getElementById(viewportId);
+
+      // count completed lessons
+      const completed = (userModules[mod.id]?.completedLessons) || [];
+      const percent = Math.round((completed.length / mod.lessons.length) * 100);
+
+      // create card
+      const card = document.createElement('div');
+      card.classList.add('module-card');
+      card.innerHTML = `
+        <h3>${mod.title}</h3>
+        <div class="progress-bar"><div class="fill" style="width: ${percent}%"></div></div>
+      `;
+      card.addEventListener('click', () => openModuleDetail(mod.id));
+      container.appendChild(card);
+    });
+  });
+})();
+
+function openModuleDetail(modId) {
+  // existing overlay logic: fetch title, progress, lessons list, etc.
+  // ensure to re-fetch progress so bar reflects latest state
+}
+  </script> 
 </head>
 <body>
   <!-- NavBar -->
