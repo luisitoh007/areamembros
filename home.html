@@ -1,4 +1,3 @@
-<!-- home.html - Módulos em 2 linhas, 3 visíveis por vez -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -8,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
   <nav class="nav-bar">
@@ -53,7 +53,15 @@
     function logout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
     // Mock modules data
-    const modulesData = Array.from({length:10},(_,i)=>({id:i+1,title:`Módulo ${i+1}`,thumb:`https://via.placeholder.com/300x200?text=Módulo+${i+1}`,lessons:Array.from({length:5},(_,j)=>`Aula ${j+1} do Módulo ${i+1}`)}));
+    const modulesData = Array.from({length:10},(_,i)=>({
+      id:i+1,
+      title:`Módulo ${i+1}`,
+      thumb:`https://via.placeholder.com/300x200?text=Módulo+${i+1}`,
+      lessons:Array.from({length:5},(_,j)=>({
+        title:`Aula ${j+1} do Módulo ${i+1}`,
+        videoUrl:`https://www.youtube.com/watch?v=VIDEO_ID_${i+1}_${j+1}`
+      }))
+    }));
 
     document.addEventListener('DOMContentLoaded',()=>{
       // Fill two rows
@@ -70,7 +78,7 @@
       document.querySelectorAll('.carousel-btn').forEach(btn=>btn.addEventListener('click',()=>{
         const row=btn.dataset.row;
         const vp=document.getElementById(`viewport-${row}`);
-        const shift = vp.clientWidth; // shows 3 cards width
+        const shift = vp.clientWidth;
         vp.scrollBy({left:btn.classList.contains('next')?shift:-shift,behavior:'smooth'});
       }));
     });
@@ -79,7 +87,15 @@
       const mod = modulesData.find(m=>m.id===id);
       document.getElementById('detail-title').innerText=mod.title;
       const list=document.getElementById('lesson-list'); list.innerHTML='';
-      mod.lessons.forEach(ls=>{let li=document.createElement('li');li.textContent=ls;list.appendChild(li);});
+      mod.lessons.forEach((ls, idx)=>{
+        let li=document.createElement('li');
+        li.textContent=ls.title;
+        li.addEventListener('click',()=>{
+          // navega para lesson.html com embed YouTube
+          window.location.href = `lesson.html?mod=${id}&lesson=${idx}`;
+        });
+        list.appendChild(li);
+      });
       document.getElementById('progress-fill').style.width='0%';
       document.getElementById('module-detail').classList.remove('hidden');
     }
