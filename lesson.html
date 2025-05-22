@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aula - BlackMind Academy</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js" defer></script>
+</head>
+<body>
+  <!-- NavBar -->
+  <div class="nav-bar">
+    <div class="logo">BlackMind Academy</div>
+    <button class="btn-logout" id="btn-logout">Sair</button>
+  </div>
+
+  <!-- Aula e Sidebar -->
+  <div class="lesson-container">
+    <!-- Área do vídeo -->
+    <div class="video-player" id="video-player">
+      <!-- Vai inserir <video> ou <iframe> aqui -->
+    </div>
+    <!-- Sidebar de próximas aulas -->
+    <div class="sidebar" id="lesson-sidebar">
+      <h3>Próximas Aulas</h3>
+      <ul id="sidebar-list"></ul>
+    </div>
+  </div>
+
+  <script>
+    // Config Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
+      authDomain: "black-mind-d6547.firebaseapp.com",
+      projectId: "black-mind-d6547"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Captura params da URL: ?mod=ID&lesson=IDX
+    const urlParams = new URLSearchParams(window.location.search);
+    const moduleId = urlParams.get('mod');
+    const lessonIdx = parseInt(urlParams.get('lesson'), 10) || 0;
+
+    // Verifica autenticação e carrega dados
+    auth.onAuthStateChanged(user => {
+      if (!user) return window.location.href = 'index.html';
+
+      // Busca lista de módulos e progresso de usuário
+      Promise.all([
+        db.collection('modules').doc(moduleId).get(),
+        db.collection('userProgress').doc(user.uid).get()
+      ]).then(([modDoc, progDoc]) => {
+        if (!modDoc.exists) throw new Error('Módulo não encontrado');
+        const modData = modDoc.data();
+        const lessons = modData.lessons; // Array de { title, videoUrl }
+        const completed = (progDoc.exists && progDoc.data().modules[moduleId]?.completedLessons) || [];
+
+        // Monta video-player
+        const playerEl = document.getElementById('video-player');
+        playerEl.innerHTML = `<video id="lesson-video" src="${lessons[lessonIdx].videoUrl}" controls autoplay style="width:100%; height:100%;"></video>`;
+
+        // Monta sidebar
+        const sidebar = document.getElementById('sidebar-list');
+        sidebar.innerHTML = '';
+        lessons.forEach((ls, idx) => {
+          const li = document.createElement('li');
+          li.className = 'sidebar-item' + (idx === lessonIdx ? ' active' : '');
+          li.innerText = ls.title;
+          // Marca já concluído
+          if (completed.includes(idx)) li.classList.add('completed');
+          // Ao clicar, navega para a aula correspondente
+          li.addEventListener('click', () => {
+            window.location.search = `?mod=${moduleId}&lesson=${idx}`;
+          });
+          sidebar.appendChild(li);
+        });
+
+        // Botão de logout
+        document.getElementById('btn-logout').addEventListener('click', () => {
+          auth.signOut().then(() => location.href = 'index.html');
+        });
+
+      }).catch(err => {
+        console.error(err);
+        alert('Erro ao carregar módulo.');
+      });
+    });
+  </script>
+</body>
+</html>
