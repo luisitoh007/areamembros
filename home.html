@@ -3,23 +3,133 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BlackMind Academy – Módulos</title>
+  <title>BlackMind Academy - Módulos</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script> 
+    // Firestore integration for lesson.html and home.html
+// Assumes Firebase SDK and initialization already present
 
-  <!-- 1) Carrega o SDK compat do Firebase ANTES de qualquer script que o use -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js" defer></script>
+// Shared initialization (e.g. in common script)
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, arrayUnion, arrayRemove, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+const auth = getAuth();
+const db = getFirestore();
+
+/* -------- lesson.html -------- */
+(async function initLessonPage() {
+  onAuthStateChanged(auth, async user => {
+    if (!user) return window.location.href = 'index.html';
+    const params = new URLSearchParams(window.location.search);
+    const modId = params.get('mod');
+    const lessonIdx = parseInt(params.get('lesson'), 10);
+
+    // Fetch module lessons
+    const moduleSnap = await getDoc(doc(db, 'modules', modId));
+    const lessons = moduleSnap.data().lessons;
+
+    // Render iframe
+    const videoUrl = lessons[lessonIdx].videoUrl;
+    document.getElementById('video-player').src = https://www.youtube.com/embed/${videoUrl}?rel=0&modestbranding=1&autoplay=1;
+
+    // Fetch user progress
+    const userProgRef = doc(db, 'userProgress', user.uid);
+    const userProgSnap = await getDoc(userProgRef);
+    const completed = (userProgSnap.data().modules?.[modId]?.completedLessons) || [];
+
+    // Render sidebar
+    const list = document.getElementById('lessons-list');
+    lessons.forEach((lesson, idx) => {
+      const li = document.createElement('li');
+      li.textContent = lesson.title;
+      li.classList.add('lesson-item');
+      li.dataset.lessonIdx = idx;
+      if (idx === lessonIdx) li.classList.add('active');
+      if (completed.includes(idx)) li.classList.add('completed');
+      li.addEventListener('click', async () => {
+        await toggleLesson(modId, idx, user.uid);
+        window.location.href = lesson.html?mod=${modId}&lesson=${idx};
+      });
+      list.appendChild(li);
+    });
+  });
+})();
+
+/**
+ * Adds or removes a lesson index in completedLessons, toggling its state
+ */
+async function toggleLesson(modId, idx, uid) {
+  const userProgRef = doc(db, 'userProgress', uid);
+  const userProgSnap = await getDoc(userProgRef);
+  const completed = (userProgSnap.data().modules?.[modId]?.completedLessons) || [];
+  const modulePath = modules.${modId}.completedLessons;
+
+  if (completed.includes(idx)) {
+    // remove
+    await updateDoc(userProgRef, {
+      [modulePath]: arrayRemove(idx)
+    });
+  } else {
+    // add
+    await updateDoc(userProgRef, {
+      [modulePath]: arrayUnion(idx)
+    });
+  }
+}
+
+/* -------- home.html -------- */
+(async function initHomePage() {
+  onAuthStateChanged(auth, async user => {
+    if (!user) return window.location.href = 'index.html';
+
+    // Fetch modules definitions
+    const modulesCol = collection(db, 'modules');
+    const modulesSnap = await getDocs(modulesCol);
+    const modules = modulesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    // Fetch user progress
+    const userProgRef = doc(db, 'userProgress', user.uid);
+    const userProgSnap = await getDoc(userProgRef);
+    const userModules = userProgSnap.data().modules || {};
+
+    modules.forEach((mod, idx) => {
+      // determine carousel viewport based on index
+      const viewportId = idx < 5 ? 'viewport-1' : 'viewport-2';
+      const container = document.getElementById(viewportId);
+
+      // count completed lessons
+      const completed = (userModules[mod.id]?.completedLessons) || [];
+      const percent = Math.round((completed.length / mod.lessons.length) * 100);
+
+      // create card
+      const card = document.createElement('div');
+      card.classList.add('module-card');
+      card.innerHTML = 
+        <h3>${mod.title}</h3>
+        <div class="progress-bar"><div class="fill" style="width: ${percent}%"></div></div>
+      ;
+      card.addEventListener('click', () => openModuleDetail(mod.id));
+      container.appendChild(card);
+    });
+  });
+})();
+
+function openModuleDetail(modId) {
+  // existing overlay logic: fetch title, progress, lessons list, etc.
+  // ensure to re-fetch progress so bar reflects latest state
+}
+  </script>
+  
 </head>
-
 <body>
-  <!-- NavBar -->
   <nav class="nav-bar">
     <div class="logo">BlackMind Academy</div>
-    <button id="btn-logout" class="btn-logout">Sair</button>
+    <button onclick="logout()" class="btn-logout">Sair</button>
   </nav>
 
-  <!-- Carrosséis de Módulos -->
   <main class="modules-container">
     <h1>Seus Módulos</h1>
 
@@ -42,117 +152,69 @@
     </div>
   </main>
 
-  <!-- Overlay de Detalhes do Módulo -->
   <div id="module-detail" class="module-detail hidden">
     <button class="back-btn" onclick="closeModule()">← Voltar</button>
     <h2 id="detail-title"></h2>
-    <div class="progress-bar">
-      <div id="progress-fill" class="progress-fill"></div>
-    </div>
+    <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
     <ul id="lesson-list" class="lesson-list"></ul>
   </div>
 
-  <!-- 2) Seu código só deve rodar APÓS os SDKs terem carregado -->
-  <script defer>
-    // Inicialização do Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U",
-      authDomain: "black-mind-d6547.firebaseapp.com",
-      projectId: "black-mind-d6547"
-    };
+  <script>
+    // Firebase init
+    const firebaseConfig = { apiKey: "AIzaSyBdndbvlBYTNY9pOdskuxYZFMtK1B84Q7U", authDomain: "black-mind-d6547.firebaseapp.com", projectId: "black-mind-d6547" };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
-    const db   = firebase.firestore();
+    auth.onAuthStateChanged(u => { if (!u) window.location.href='index.html'; });
+    function logout(){ auth.signOut().then(()=>window.location.href='index.html'); }
 
-    // Logout
-    document.getElementById('btn-logout').addEventListener('click', () =>
-      auth.signOut().then(() => window.location.href = 'index.html')
-    );
+    // Mock modules data
+    const modulesData = Array.from({length:10},(_,i)=>({
+      id:i+1,
+      title:Módulo ${i+1},
+      thumb:https://via.placeholder.com/300x200?text=Módulo+${i+1},
+      lessons:Array.from({length:5},(_,j)=>({
+        title:Aula ${j+1} do Módulo ${i+1},
+        videoUrl:https://www.youtube.com/watch?v=VIDEO_ID_${i+1}_${j+1}
+      }))
+    }));
 
-    // Ao mudar de estado de autenticação, carrega módulos
-    auth.onAuthStateChanged(user => {
-      if (!user) return window.location.href = 'index.html';
-      loadModules(user.uid);
+    document.addEventListener('DOMContentLoaded',()=>{
+      // Fill two rows
+      const row1 = document.getElementById('cards-row-1'), row2 = document.getElementById('cards-row-2');
+      modulesData.slice(0,5).forEach(mod=>addCard(mod,row1));
+      modulesData.slice(5).forEach(mod=>addCard(mod,row2));
+      function addCard(mod,container){
+        const c=document.createElement('div');c.className='card';
+        c.innerHTML = <img src='${mod.thumb}' alt='Thumb ${mod.title}'/><div class='card-info'><span class='module-label'>Módulo ${mod.id}</span><h2>${mod.title}</h2></div>;
+        c.onclick=()=>openModule(mod.id);
+        container.appendChild(c);
+      }
+      // Buttons scroll
+      document.querySelectorAll('.carousel-btn').forEach(btn=>btn.addEventListener('click',()=>{
+        const row=btn.dataset.row;
+        const vp=document.getElementById(viewport-${row});
+        const shift = vp.clientWidth;
+        vp.scrollBy({left:btn.classList.contains('next')?shift:-shift,behavior:'smooth'});
+      }));
     });
 
-    async function loadModules(uid) {
-      try {
-        const modSnap  = await db.collection('modules').get();
-        const progSnap = await db.collection('userProgress').doc(uid).get();
-        const userProg = progSnap.exists ? progSnap.data().modules || {} : {};
-
-        // Isto imprimiu os IDs dos módulos no console?
-        console.log('Módulos carregados:', modSnap.docs.map(d => d.id));
-
-        const modules = modSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        renderCarousels(modules, userProg);
-      } catch (err) {
-        console.error('Erro ao carregar módulos:', err);
-        alert('Erro ao carregar módulos; veja console.');
-      }
-    }
-
-    function renderCarousels(modules, userProg) {
-      // Limpa containers
-      const row1 = document.getElementById('cards-row-1');
-      const row2 = document.getElementById('cards-row-2');
-      row1.innerHTML = '';
-      row2.innerHTML = '';
-
-      modules.slice(0,5).forEach(mod => createCard(mod, row1, userProg));
-      modules.slice(5).forEach(mod => createCard(mod, row2, userProg));
-
-      // Scroll dos botões
-      document.querySelectorAll('.carousel-btn').forEach(btn => {
-        btn.onclick = () => {
-          const row = btn.dataset.row;
-          const vp  = document.getElementById(`viewport-${row}`);
-          const shift = vp.clientWidth;
-          vp.scrollBy({ left: btn.classList.contains('next') ? shift : -shift, behavior: 'smooth' });
-        };
-      });
-    }
-
-    function createCard(mod, container, userProg) {
-      const completed = (userProg[mod.id]?.completedLessons) || [];
-      const total     = Array.isArray(mod.lessons) ? mod.lessons.length : 1;
-      const pct       = Math.round(completed.length / total * 100);
-
-      const card = document.createElement('div');
-      card.className = 'module-card';
-      card.innerHTML = `
-        <img src="${mod.thumb || 'https://via.placeholder.com/300x200?text=' + encodeURIComponent(mod.title)}" alt="${mod.title}">
-        <div class="card-info">
-          <h3>${mod.title}</h3>
-          <div class="progress-bar">
-            <div class="fill" style="width: ${pct}%"></div>
-          </div>
-        </div>
-      `;
-
-      card.onclick = () => openModule(mod, pct);
-      container.appendChild(card);
-    }
-
-    function openModule(mod, pct) {
-      document.getElementById('detail-title').innerText = mod.title;
-      document.getElementById('progress-fill').style.width = pct + '%';
-
-      const list = document.getElementById('lesson-list');
-      list.innerHTML = '';
-      (mod.lessons || []).forEach((ls, idx) => {
-        const li = document.createElement('li');
-        li.textContent = ls.title;
-        li.onclick = () => window.location.href = `lesson.html?mod=${mod.id}&lesson=${idx}`;
+    function openModule(id){
+      const mod = modulesData.find(m=>m.id===id);
+      document.getElementById('detail-title').innerText=mod.title;
+      const list=document.getElementById('lesson-list'); list.innerHTML='';
+      mod.lessons.forEach((ls, idx)=>{
+        let li=document.createElement('li');
+        li.textContent=ls.title;
+        li.addEventListener('click',()=>{
+          // navega para lesson.html com embed YouTube
+          window.location.href = lesson.html?mod=${id}&lesson=${idx};
+        });
         list.appendChild(li);
       });
-
+      document.getElementById('progress-fill').style.width='0%';
       document.getElementById('module-detail').classList.remove('hidden');
     }
-
-    function closeModule() {
-      document.getElementById('module-detail').classList.add('hidden');
-    }
+    function closeModule(){document.getElementById('module-detail').classList.add('hidden');}
   </script>
 </body>
 </html>
