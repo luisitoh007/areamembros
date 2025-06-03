@@ -45,8 +45,8 @@
       <h2>Módulos Bônus</h2>
       <div class="carousel-container">
         <button class="carousel-btn prev" data-row="3">‹</button>
-        <div class="viewport" id="viewport-3"> {/* Novo ID */}
-          <div class="cards-grid" id="cards-row-3"> {/* Novo ID */}
+        <div class="viewport" id="viewport-3"><!-- Novo ID -->
+          <div class="cards-grid" id="cards-row-3"><!-- Novo ID -->
             </div>
         </div>
         <button class="carousel-btn next" data-row="3">›</button>
@@ -54,7 +54,7 @@
     </section>
   </main>
 
-  <div id="module-detail-overlay" class="module-detail hidden"> {/* Renomeado para clareza */}
+  <div id="module-detail-overlay" class="module-detail hidden"><!-- Renomeado para clareza -->
     <button class="back-btn" onclick="closeModuleDetail()">← Voltar</button>
     <h2 id="detail-title"></h2>
     <div class="progress-bar">
@@ -103,10 +103,10 @@
 
         // Define a distribuição de módulos por linha (ex: 4-3-3 para 10 módulos)
         // Ajuste conforme o número de módulos que você tiver ou como quiser exibi-los
-        const modulesDistribution = [
-          { rowId: 'cards-row-1', count: 4, modules: [1] },
-          { rowId: 'cards-row-2', count: 3, modules: [2] },
-          { rowId: 'cards-row-3', count: 3, modules: [3] }
+          const modulesDistribution = [
+          { rowId: 'cards-row-1', count: 4, modules: [] },
+          { rowId: 'cards-row-2', count: 3, modules: [] },
+          { rowId: 'cards-row-3', count: 3, modules: [] }
         ];
         
         let moduleIndex = 0;
@@ -124,7 +124,7 @@
                 const totalLessons = Array.isArray(mod.lessons) ? mod.lessons.length : 0;
                 const percentComplete = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
 
-                addCardToDOM(mod, percentComplete, container);
+                addCardToDOM(mod, percentComplete, container, userModulesProgress);
             });
         });
 
@@ -134,7 +134,7 @@
       }
     }
 
-    function addCardToDOM(moduleData, percentComplete, containerElement) {
+    function addCardToDOM(moduleData, percentComplete, containerElement, progressData) {
       const card = document.createElement('div');
       card.className = 'card'; // Usando a classe 'card' do seu style.css
       // A thumbnail pode vir do seu Firestore (moduleData.thumbUrl ou similar)
@@ -144,7 +144,7 @@
       card.innerHTML = `
         <img src='${thumbUrl}' alt='Thumbnail ${moduleData.title}'/>
         <div class='card-info'>
-          <span class='module-label'>Módulo ${moduleData.id}</span> {/* Ou use uma propriedade específica se tiver */}
+          <span class='module-label'>Módulo ${moduleData.id}</span>
           <h2>${moduleData.title}</h2>
           <div class="progress-bar" style="height: 8px; background-color: #555; border-radius: 4px; margin-top: 10px;">
             <div class="fill" style="width: ${percentComplete}%; height: 100%; background-color: #00bfff; border-radius: 4px;"></div>
@@ -152,7 +152,7 @@
           <p style="font-size: 0.8em; text-align: right;">${percentComplete}% completo</p>
         </div>
       `;
-      card.onclick = () => openModuleDetail(moduleData.id, moduleData.title, userModulesProgress); // Passa userModulesProgress
+      card.onclick = () => openModuleDetail(moduleData.id, moduleData.title, progressData);
       containerElement.appendChild(card);
     }
     
